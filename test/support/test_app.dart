@@ -174,13 +174,19 @@ void testApp(
   String description,
   Future<void> Function(WidgetTester tester) body, {
   Timeout? timeout,
+  bool skip = false,
 }) {
-  testWidgets(description, (tester) async {
-    try {
-      await body(tester);
-    } finally {
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump(const Duration(milliseconds: 50));
-    }
-  }, timeout: timeout);
+  testWidgets(
+    description,
+    (tester) async {
+      try {
+        await body(tester);
+      } finally {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+    },
+    timeout: timeout,
+    skip: skip,
+  );
 }
