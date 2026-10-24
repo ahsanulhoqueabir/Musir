@@ -151,7 +151,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             onTap: () => showDialog<void>(
               context: context,
-              builder: (_) => AlertDialog(
+              builder: (dialogContext) => AlertDialog(
                 title: const Text('Privacy'),
                 content: Text(
                   'Musir works entirely on your device.\n\n'
@@ -165,7 +165,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(dialogContext).pop(),
                     child: const Text('Close'),
                   ),
                 ],
