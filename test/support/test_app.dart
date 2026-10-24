@@ -6,6 +6,7 @@ import 'package:musir/app/app.dart';
 import 'package:musir/app/providers.dart';
 import 'package:musir/data/db/database.dart';
 import 'package:musir/data/models/scanned_track.dart';
+import 'package:musir/data/repositories/library_repository.dart';
 import 'package:musir/features/library/library_controller.dart';
 import 'package:musir/features/player/player_providers.dart';
 import 'package:musir/features/settings/settings_state.dart';
@@ -84,6 +85,12 @@ class TestEnv {
   final Set<String> missingPaths = {};
 
   late ProviderContainer container;
+
+  /// Writes the sample library into the database before the app starts, as if
+  /// a previous session had already scanned it.
+  Future<void> seedLibrary() async {
+    await LibraryRepository(db).applyScan(scanner.result, nowMs: 1000);
+  }
 
   List<Override> get overrides => [
     sharedPreferencesProvider.overrideWithValue(prefs),
@@ -169,8 +176,11 @@ void testApp(
   Timeout? timeout,
 }) {
   testWidgets(description, (tester) async {
-    await body(tester);
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump(const Duration(milliseconds: 50));
+    try {
+      await body(tester);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 50));
+    }
   }, timeout: timeout);
 }

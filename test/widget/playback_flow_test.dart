@@ -209,4 +209,28 @@ void main() {
     expect(env.engine.index, 1);
     expect(find.textContaining('Can\'t play "Song 1"'), findsOneWidget);
   });
+
+  testApp('mini-player stays compact on pages where it is the only bottom bar', (
+    tester,
+  ) async {
+    final env = await createEnv(tester);
+    await pumpApp(tester, env);
+    await openLibrary(tester);
+    await tester.tap(find.text('Albums'));
+    await settle(tester);
+    await tester.tap(find.text('Second Album'));
+    await settle(tester);
+    await tester.tap(find.text('Play'));
+    await settle(tester);
+
+    // Regression: the mini-player once expanded to fill the whole screen here,
+    // leaving the album's song list with zero height.
+    final mini = tester.getRect(find.byType(MiniPlayer));
+    expect(mini.height, lessThan(100));
+    expect(
+      mini.bottom,
+      tester.view.physicalSize.height / tester.view.devicePixelRatio,
+    );
+    expect(find.text('Song 4'), findsWidgets);
+  });
 }
