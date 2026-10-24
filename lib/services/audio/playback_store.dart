@@ -23,7 +23,7 @@ class SavedPlayback {
   final int index;
   final int positionMs;
   final bool shuffle;
-  final RepeatMode repeat;
+  final RepeatSetting repeat;
 
   Map<String, Object?> toJson() => {
     'queue': queueIds,
@@ -46,7 +46,7 @@ class SavedPlayback {
         index: index.clamp(0, queue.length - 1),
         positionMs: json['positionMs'] as int,
         shuffle: json['shuffle'] as bool,
-        repeat: RepeatMode.values.byName(json['repeat'] as String),
+        repeat: RepeatSetting.values.byName(json['repeat'] as String),
       );
     } catch (_) {
       return null;

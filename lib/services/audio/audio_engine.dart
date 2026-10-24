@@ -1,6 +1,6 @@
 import '../../data/models/track.dart';
 
-enum RepeatMode { off, all, one }
+enum RepeatSetting { off, all, one }
 
 enum EngineStatus { idle, loading, ready, completed }
 
@@ -61,7 +61,7 @@ abstract interface class AudioEngine {
   Future<void> pause();
   Future<void> stop();
   Future<void> seek(Duration position, {int? index});
-  Future<void> setRepeat(RepeatMode mode);
+  Future<void> setRepeat(RepeatSetting mode);
   Future<void> setSkipSilence(bool enabled);
   Future<void> dispose();
 }

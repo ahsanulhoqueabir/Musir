@@ -122,7 +122,7 @@ void main() {
       final ids = await seed(4);
       final pl = await playlists.create('P');
       await playlists.addTracks(pl, ids);
-      await playlists.reorder(pl, 0, 3); // first item to index 2 (post-removal)
+      await playlists.reorder(pl, 0, 2); // first item ends up at index 2
       expect((await playlists.watchEntries().first)[pl], [
         ids[1],
         ids[2],

@@ -14,7 +14,7 @@ class FakeAudioEngine implements AudioEngine {
   int? index;
   bool isPlaying = false;
   Duration pos = Duration.zero;
-  RepeatMode repeat = RepeatMode.off;
+  RepeatSetting repeat = RepeatSetting.off;
   bool skipSilence = false;
   bool disposed = false;
   Set<String> failPaths = {};
@@ -30,11 +30,11 @@ class FakeAudioEngine implements AudioEngine {
   /// Simulates the player finishing the current item.
   void finishCurrent() {
     final i = index!;
-    if (repeat == RepeatMode.one) return;
+    if (repeat == RepeatSetting.one) return;
     if (i + 1 < queue.length) {
       pos = Duration.zero;
       _setIndex(i + 1);
-    } else if (repeat == RepeatMode.all) {
+    } else if (repeat == RepeatSetting.all) {
       pos = Duration.zero;
       _setIndex(0);
     } else {
@@ -136,7 +136,7 @@ class FakeAudioEngine implements AudioEngine {
   }
 
   @override
-  Future<void> setRepeat(RepeatMode mode) async => repeat = mode;
+  Future<void> setRepeat(RepeatSetting mode) async => repeat = mode;
 
   @override
   Future<void> setSkipSilence(bool enabled) async => skipSilence = enabled;

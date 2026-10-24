@@ -126,11 +126,12 @@ class JustAudioEngine implements AudioEngine {
       _player.seek(position, index: index);
 
   @override
-  Future<void> setRepeat(RepeatMode mode) => _player.setLoopMode(switch (mode) {
-    RepeatMode.off => LoopMode.off,
-    RepeatMode.all => LoopMode.all,
-    RepeatMode.one => LoopMode.one,
-  });
+  Future<void> setRepeat(RepeatSetting mode) =>
+      _player.setLoopMode(switch (mode) {
+        RepeatSetting.off => LoopMode.off,
+        RepeatSetting.all => LoopMode.all,
+        RepeatSetting.one => LoopMode.one,
+      });
 
   @override
   Future<void> setSkipSilence(bool enabled) =>

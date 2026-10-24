@@ -125,7 +125,7 @@ void main() {
 
     test('next wraps with repeat all', () async {
       await c.playTracks(lib, startIndex: 5);
-      await c.setRepeat(RepeatMode.all);
+      await c.setRepeat(RepeatSetting.all);
       await c.next();
       expect(curId(), 1);
     });
@@ -154,7 +154,7 @@ void main() {
         await c.playTracks(lib);
         await c.previous();
         expect(curId(), 1);
-        await c.setRepeat(RepeatMode.all);
+        await c.setRepeat(RepeatSetting.all);
         await c.previous();
         expect(curId(), 6);
       },
@@ -200,18 +200,18 @@ void main() {
       () async {
         await c.playTracks(lib);
         await c.cycleRepeat();
-        expect(c.state.repeat, RepeatMode.all);
-        expect(engine.repeat, RepeatMode.all);
+        expect(c.state.repeat, RepeatSetting.all);
+        expect(engine.repeat, RepeatSetting.all);
         await c.cycleRepeat();
-        expect(engine.repeat, RepeatMode.one);
+        expect(engine.repeat, RepeatSetting.one);
         await c.cycleRepeat();
-        expect(engine.repeat, RepeatMode.off);
+        expect(engine.repeat, RepeatSetting.off);
       },
     );
 
     test('repeat one keeps the same track when it finishes', () async {
       await c.playTracks(lib, startIndex: 1);
-      await c.setRepeat(RepeatMode.one);
+      await c.setRepeat(RepeatSetting.one);
       engine.finishCurrent();
       expect(curId(), 2);
     });
@@ -445,20 +445,20 @@ void main() {
   group('persistence', () {
     test('queue, index, modes and position are saved', () async {
       await c.playTracks(lib, startIndex: 2);
-      await c.setRepeat(RepeatMode.all);
+      await c.setRepeat(RepeatSetting.all);
       engine.pos = const Duration(seconds: 42);
       c.persistNow();
       final s = store.saved!;
       expect(s.queueIds, [1, 2, 3, 4, 5, 6]);
       expect(s.index, 2);
       expect(s.positionMs, 42000);
-      expect(s.repeat, RepeatMode.all);
+      expect(s.repeat, RepeatSetting.all);
       expect(s.shuffle, isFalse);
     });
 
     test('restore rebuilds the queue paused at the saved position', () async {
       await c.playTracks(lib, startIndex: 2);
-      await c.setRepeat(RepeatMode.one);
+      await c.setRepeat(RepeatSetting.one);
       engine.pos = const Duration(seconds: 42);
       c.persistNow();
       final saved = store.saved!;
@@ -475,8 +475,8 @@ void main() {
       expect(c2.state.playing, isFalse);
       expect(engine2.isPlaying, isFalse);
       expect(engine2.pos, const Duration(seconds: 42));
-      expect(c2.state.repeat, RepeatMode.one);
-      expect(engine2.repeat, RepeatMode.one);
+      expect(c2.state.repeat, RepeatSetting.one);
+      expect(engine2.repeat, RepeatSetting.one);
       await c2.dispose();
     });
 
@@ -489,7 +489,7 @@ void main() {
           index: 1,
           positionMs: 5000,
           shuffle: false,
-          repeat: RepeatMode.off,
+          repeat: RepeatSetting.off,
         );
         missing = {lib[0].path};
         await c.restore(saved, {for (final t in lib) t.id: t});
@@ -507,7 +507,7 @@ void main() {
           index: 1,
           positionMs: 5000,
           shuffle: false,
-          repeat: RepeatMode.off,
+          repeat: RepeatSetting.off,
         );
         missing = {lib[1].path};
         await c.restore(saved, {for (final t in lib) t.id: t});
@@ -546,12 +546,12 @@ void main() {
         index: 1,
         positionMs: 9,
         shuffle: true,
-        repeat: RepeatMode.all,
+        repeat: RepeatSetting.all,
       );
       final back = SavedPlayback.fromJson(s.toJson())!;
       expect(back.queueIds, [1, 2]);
       expect(back.originalIds, [2, 1]);
-      expect(back.repeat, RepeatMode.all);
+      expect(back.repeat, RepeatSetting.all);
       expect(SavedPlayback.fromJson('nope'), isNull);
       expect(SavedPlayback.fromJson({'queue': []}), isNull);
       expect(

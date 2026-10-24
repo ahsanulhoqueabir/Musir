@@ -77,8 +77,9 @@ class PlaylistsRepository {
         .go();
   }
 
-  /// Moves the entry at [oldIndex] to [newIndex] (post-removal semantics, as
-  /// used by [ReorderableListView]) and rewrites positions.
+  /// Moves the entry at [oldIndex] so it ends up at [newIndex] (the index in
+  /// the final list, as passed by `ReorderableListView.onReorderItem`) and
+  /// rewrites positions.
   Future<void> reorder(int playlistId, int oldIndex, int newIndex) {
     return _db.transaction(() async {
       final rows =
@@ -88,7 +89,6 @@ class PlaylistsRepository {
               .get();
       final ids = [for (final r in rows) r.trackId];
       if (oldIndex < 0 || oldIndex >= ids.length) return;
-      if (newIndex > oldIndex) newIndex -= 1;
       newIndex = newIndex.clamp(0, ids.length - 1);
       ids.insert(newIndex, ids.removeAt(oldIndex));
       for (var i = 0; i < ids.length; i++) {

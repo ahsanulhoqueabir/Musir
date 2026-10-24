@@ -197,9 +197,9 @@ class PlaybackController {
     if (i == null) return;
     if (_state.hasNext) {
       await _engine.seek(Duration.zero, index: i + 1);
-    } else if (_state.repeat == RepeatMode.all && _state.queue.length > 1) {
+    } else if (_state.repeat == RepeatSetting.all && _state.queue.length > 1) {
       await _engine.seek(Duration.zero, index: 0);
-    } else if (_state.repeat == RepeatMode.all) {
+    } else if (_state.repeat == RepeatSetting.all) {
       await _engine.seek(Duration.zero);
     }
     // At the end with repeat off: nothing to skip to.
@@ -209,7 +209,8 @@ class PlaybackController {
     final i = _state.currentIndex;
     if (i == null) return;
     final restart = _engine.currentPosition > previousRestartThreshold;
-    if (restart || (!_state.hasPrevious && _state.repeat != RepeatMode.all)) {
+    if (restart ||
+        (!_state.hasPrevious && _state.repeat != RepeatSetting.all)) {
       await _engine.seek(Duration.zero);
     } else if (_state.hasPrevious) {
       await _engine.seek(Duration.zero, index: i - 1);
@@ -226,14 +227,15 @@ class PlaybackController {
 
   // --------------------------------------------------------------- modes
 
-  Future<void> setRepeat(RepeatMode mode) async {
+  Future<void> setRepeat(RepeatSetting mode) async {
     _emit(_state.copyWith(repeat: mode));
     await _engine.setRepeat(mode);
     _persist();
   }
 
   Future<void> cycleRepeat() => setRepeat(
-    RepeatMode.values[(_state.repeat.index + 1) % RepeatMode.values.length],
+    RepeatSetting.values[(_state.repeat.index + 1) %
+        RepeatSetting.values.length],
   );
 
   Future<void> setSkipSilence(bool enabled) => _engine.setSkipSilence(enabled);

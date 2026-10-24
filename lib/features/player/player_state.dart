@@ -20,7 +20,7 @@ class PlayerState {
     this.playing = false,
     this.loading = false,
     this.shuffle = false,
-    this.repeat = RepeatMode.off,
+    this.repeat = RepeatSetting.off,
     this.notice,
   });
 
@@ -30,7 +30,7 @@ class PlayerState {
   final bool playing;
   final bool loading;
   final bool shuffle;
-  final RepeatMode repeat;
+  final RepeatSetting repeat;
   final PlayerNotice? notice;
 
   QueueEntry? get currentEntry {
@@ -50,7 +50,7 @@ class PlayerState {
     bool? playing,
     bool? loading,
     bool? shuffle,
-    RepeatMode? repeat,
+    RepeatSetting? repeat,
     PlayerNotice? notice,
   }) => PlayerState(
     queue: queue ?? this.queue,
