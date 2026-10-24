@@ -46,8 +46,6 @@ class TrackTile extends ConsumerWidget {
 
     return ListTile(
       onTap: onTap,
-      selected: isCurrent,
-      selectedTileColor: Colors.transparent,
       leading: Stack(
         alignment: Alignment.center,
         children: [
