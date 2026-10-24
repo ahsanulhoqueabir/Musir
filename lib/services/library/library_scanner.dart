@@ -127,6 +127,7 @@ ScanResult scanDirectories(ScanRequest request) {
   String? title;
   String? artist;
   String? album;
+  String? albumArtist;
   Duration? duration;
   int? trackNumber;
   String? artworkPath;
@@ -135,6 +136,7 @@ ScanResult scanDirectories(ScanRequest request) {
     title = meta.title;
     artist = meta.artist ?? meta.albumArtist;
     album = meta.album;
+    albumArtist = meta.albumArtist;
     duration = meta.duration;
     trackNumber = meta.trackNumber;
     artworkPath = _cacheArtwork(meta.pictures, request.artworkDir);
@@ -154,6 +156,9 @@ ScanResult scanDirectories(ScanRequest request) {
       title: clean(title, base),
       artist: clean(artist, unknownArtist),
       album: clean(album, unknownAlbum),
+      albumArtist: albumArtist?.trim().isEmpty ?? true
+          ? null
+          : albumArtist!.trim(),
       durationMs: duration?.inMilliseconds ?? 0,
       sizeBytes: stat.size,
       modifiedMs: modified,

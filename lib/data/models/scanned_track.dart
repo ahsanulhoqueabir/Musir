@@ -8,6 +8,7 @@ class ScannedTrack {
     required this.durationMs,
     required this.sizeBytes,
     required this.modifiedMs,
+    this.albumArtist,
     this.trackNumber,
     this.artworkPath,
   });
@@ -20,6 +21,7 @@ class ScannedTrack {
   final int sizeBytes;
   final int modifiedMs;
   final int? trackNumber;
+  final String? albumArtist;
   final String? artworkPath;
 }
 

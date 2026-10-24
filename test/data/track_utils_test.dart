@@ -91,14 +91,71 @@ void main() {
     expect(ids(dedupeTracks([dup, a, differentSize])), [1, 8]);
   });
 
-  test('groupAlbums separates same album name by artist and orders tracks', () {
-    final x = track(4, album: 'Hits', artist: 'P', trackNumber: 2);
-    final y = track(5, album: 'Hits', artist: 'P', trackNumber: 1);
-    final z = track(6, album: 'Hits', artist: 'Q');
-    final groups = groupAlbums([x, y, z]);
-    expect(groups, hasLength(2));
-    final p = groups.firstWhere((g) => g.artist == 'P');
-    expect(ids(p.tracks), [5, 4]);
+  group('groupAlbums', () {
+    test(
+      'a guest artist does not split an album (same folder, no album artist)',
+      () {
+        final a1 = track(1, album: 'Record', artist: 'Main', dir: '/m/record');
+        final a2 = track(
+          2,
+          album: 'Record',
+          artist: 'Main feat. Guest',
+          dir: '/m/record',
+        );
+        final a3 = track(3, album: 'Record', artist: 'Main', dir: '/m/record');
+        final groups = groupAlbums([a1, a2, a3]);
+        expect(groups, hasLength(1));
+        expect(groups.single.artist, 'Main'); // dominant artist (2 of 3)
+      },
+    );
+
+    test('same album name in different folders stays separate', () {
+      final x = track(1, album: 'Greatest Hits', artist: 'P', dir: '/m/p');
+      final y = track(2, album: 'Greatest Hits', artist: 'Q', dir: '/m/q');
+      expect(groupAlbums([x, y]), hasLength(2));
+    });
+
+    test('album artist tag wins over folder and track artist', () {
+      final x = track(
+        1,
+        album: 'Mix',
+        artist: 'A',
+        albumArtist: 'Various',
+        dir: '/m/a',
+      );
+      final y = track(
+        2,
+        album: 'Mix',
+        artist: 'B',
+        albumArtist: 'Various',
+        dir: '/m/b',
+      );
+      final groups = groupAlbums([x, y]);
+      expect(groups, hasLength(1));
+      expect(groups.single.artist, 'Various');
+    });
+
+    test('mixed artists without a tag are shown as Various artists', () {
+      final groups = groupAlbums([
+        track(1, album: 'Comp', artist: 'A', dir: '/m/c'),
+        track(2, album: 'Comp', artist: 'B', dir: '/m/c'),
+        track(3, album: 'Comp', artist: 'C', dir: '/m/c'),
+      ]);
+      expect(groups.single.artist, 'Various artists');
+    });
+
+    test('tracks are ordered by track number, then title', () {
+      final x = track(4, album: 'Hits', trackNumber: 2);
+      final y = track(5, album: 'Hits', trackNumber: 1);
+      final z = track(6, album: 'Hits', title: 'A untitled');
+      expect(ids(groupAlbums([x, y, z]).single.tracks), [5, 4, 6]);
+    });
+
+    test('albumKeyFor is stable for tracks of one album', () {
+      final x = track(1, album: 'Hits', dir: '/m/h');
+      final y = track(2, album: 'HITS ', dir: '/m/h');
+      expect(albumKeyFor(x), albumKeyFor(y));
+    });
   });
 
   test('groupArtists merges case-insensitively', () {

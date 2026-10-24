@@ -1,3 +1,5 @@
+import 'package:path/path.dart' as p;
+
 import 'track.dart';
 
 enum TrackSort {
@@ -78,13 +80,27 @@ List<Track> dedupeTracks(List<Track> tracks) {
 }
 
 class AlbumGroup {
-  AlbumGroup({required this.name, required this.artist, required this.tracks});
+  AlbumGroup({required this.name, required this.tracks});
 
   final String name;
-  final String artist;
   final List<Track> tracks;
 
-  String get key => albumKey(name, artist);
+  String get key => albumKeyFor(tracks.first);
+
+  /// The album artist tag if any track has one; otherwise the artist who
+  /// dominates the album, or "Various artists" for a mixed bag.
+  String get artist {
+    for (final t in tracks) {
+      if (t.albumArtist != null) return t.albumArtist!;
+    }
+    final counts = <String, int>{};
+    for (final t in tracks) {
+      counts[t.artist] = (counts[t.artist] ?? 0) + 1;
+    }
+    final top = counts.entries.reduce((a, b) => b.value > a.value ? b : a);
+    return top.value * 10 >= tracks.length * 6 ? top.key : 'Various artists';
+  }
+
   String? get artworkPath {
     for (final t in tracks) {
       if (t.artworkPath != null) return t.artworkPath;
@@ -112,18 +128,25 @@ class ArtistGroup {
   }
 }
 
-String albumKey(String album, String artist) =>
-    '${_norm(album)}\u0000${_norm(artist)}';
+/// Identity of the album a track belongs to.
+///
+/// Uses the album artist tag when present. Without it, falls back to the
+/// containing folder rather than the track artist, so a track with a guest
+/// artist stays on its album, while two different "Greatest Hits" folders
+/// stay apart.
+String albumKeyFor(Track t) =>
+    '${_norm(t.album)}\u0000${_norm(t.albumArtist ?? p.dirname(t.path))}';
 
-/// Groups by album + primary artist so two different "Greatest Hits" stay apart.
 List<AlbumGroup> groupAlbums(Iterable<Track> tracks) {
   final map = <String, AlbumGroup>{};
   for (final t in tracks) {
-    final g = map.putIfAbsent(
-      albumKey(t.album, t.artist),
-      () => AlbumGroup(name: t.album, artist: t.artist, tracks: []),
-    );
-    g.tracks.add(t);
+    map
+        .putIfAbsent(
+          albumKeyFor(t),
+          () => AlbumGroup(name: t.album, tracks: []),
+        )
+        .tracks
+        .add(t);
   }
   final groups = map.values.toList();
   for (final g in groups) {

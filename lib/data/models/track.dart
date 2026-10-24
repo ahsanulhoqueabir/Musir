@@ -19,6 +19,7 @@ class Track {
     required this.sizeBytes,
     required this.modifiedMs,
     required this.addedMs,
+    this.albumArtist,
     this.trackNumber,
     this.artworkPath,
   });
@@ -33,6 +34,9 @@ class Track {
   final int modifiedMs;
   final int addedMs;
   final int? trackNumber;
+
+  /// The album-level artist tag, when the file has one.
+  final String? albumArtist;
 
   /// Cached embedded artwork on disk, if the file had any.
   final String? artworkPath;

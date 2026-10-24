@@ -25,7 +25,7 @@ class AlbumScreen extends ConsumerWidget {
         ? null
         : ref
               .watch(albumsProvider)
-              .where((a) => a.key == albumKey(seed.album, seed.artist))
+              .where((a) => a.key == albumKeyFor(seed))
               .firstOrNull;
 
     return Scaffold(

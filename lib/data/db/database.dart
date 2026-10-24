@@ -10,6 +10,7 @@ class Tracks extends Table {
   TextColumn get title => text()();
   TextColumn get artist => text()();
   TextColumn get album => text()();
+  TextColumn get albumArtist => text().nullable()();
   IntColumn get durationMs => integer()();
   IntColumn get trackNumber => integer().nullable()();
   IntColumn get sizeBytes => integer()();

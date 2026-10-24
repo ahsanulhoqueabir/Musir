@@ -58,6 +58,17 @@ class $TracksTable extends Tracks with TableInfo<$TracksTable, TrackRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _albumArtistMeta = const VerificationMeta(
+    'albumArtist',
+  );
+  @override
+  late final GeneratedColumn<String> albumArtist = GeneratedColumn<String>(
+    'album_artist',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _durationMsMeta = const VerificationMeta(
     'durationMs',
   );
@@ -131,6 +142,7 @@ class $TracksTable extends Tracks with TableInfo<$TracksTable, TrackRow> {
     title,
     artist,
     album,
+    albumArtist,
     durationMs,
     trackNumber,
     sizeBytes,
@@ -184,6 +196,15 @@ class $TracksTable extends Tracks with TableInfo<$TracksTable, TrackRow> {
       );
     } else if (isInserting) {
       context.missing(_albumMeta);
+    }
+    if (data.containsKey('album_artist')) {
+      context.handle(
+        _albumArtistMeta,
+        albumArtist.isAcceptableOrUnknown(
+          data['album_artist']!,
+          _albumArtistMeta,
+        ),
+      );
     }
     if (data.containsKey('duration_ms')) {
       context.handle(
@@ -264,6 +285,10 @@ class $TracksTable extends Tracks with TableInfo<$TracksTable, TrackRow> {
         DriftSqlType.string,
         data['${effectivePrefix}album'],
       )!,
+      albumArtist: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}album_artist'],
+      ),
       durationMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}duration_ms'],
@@ -303,6 +328,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
   final String title;
   final String artist;
   final String album;
+  final String? albumArtist;
   final int durationMs;
   final int? trackNumber;
   final int sizeBytes;
@@ -315,6 +341,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     required this.title,
     required this.artist,
     required this.album,
+    this.albumArtist,
     required this.durationMs,
     this.trackNumber,
     required this.sizeBytes,
@@ -330,6 +357,9 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     map['title'] = Variable<String>(title);
     map['artist'] = Variable<String>(artist);
     map['album'] = Variable<String>(album);
+    if (!nullToAbsent || albumArtist != null) {
+      map['album_artist'] = Variable<String>(albumArtist);
+    }
     map['duration_ms'] = Variable<int>(durationMs);
     if (!nullToAbsent || trackNumber != null) {
       map['track_number'] = Variable<int>(trackNumber);
@@ -350,6 +380,9 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       title: Value(title),
       artist: Value(artist),
       album: Value(album),
+      albumArtist: albumArtist == null && nullToAbsent
+          ? const Value.absent()
+          : Value(albumArtist),
       durationMs: Value(durationMs),
       trackNumber: trackNumber == null && nullToAbsent
           ? const Value.absent()
@@ -374,6 +407,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       title: serializer.fromJson<String>(json['title']),
       artist: serializer.fromJson<String>(json['artist']),
       album: serializer.fromJson<String>(json['album']),
+      albumArtist: serializer.fromJson<String?>(json['albumArtist']),
       durationMs: serializer.fromJson<int>(json['durationMs']),
       trackNumber: serializer.fromJson<int?>(json['trackNumber']),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
@@ -391,6 +425,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       'title': serializer.toJson<String>(title),
       'artist': serializer.toJson<String>(artist),
       'album': serializer.toJson<String>(album),
+      'albumArtist': serializer.toJson<String?>(albumArtist),
       'durationMs': serializer.toJson<int>(durationMs),
       'trackNumber': serializer.toJson<int?>(trackNumber),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
@@ -406,6 +441,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     String? title,
     String? artist,
     String? album,
+    Value<String?> albumArtist = const Value.absent(),
     int? durationMs,
     Value<int?> trackNumber = const Value.absent(),
     int? sizeBytes,
@@ -418,6 +454,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     title: title ?? this.title,
     artist: artist ?? this.artist,
     album: album ?? this.album,
+    albumArtist: albumArtist.present ? albumArtist.value : this.albumArtist,
     durationMs: durationMs ?? this.durationMs,
     trackNumber: trackNumber.present ? trackNumber.value : this.trackNumber,
     sizeBytes: sizeBytes ?? this.sizeBytes,
@@ -432,6 +469,9 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       title: data.title.present ? data.title.value : this.title,
       artist: data.artist.present ? data.artist.value : this.artist,
       album: data.album.present ? data.album.value : this.album,
+      albumArtist: data.albumArtist.present
+          ? data.albumArtist.value
+          : this.albumArtist,
       durationMs: data.durationMs.present
           ? data.durationMs.value
           : this.durationMs,
@@ -457,6 +497,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
           ..write('title: $title, ')
           ..write('artist: $artist, ')
           ..write('album: $album, ')
+          ..write('albumArtist: $albumArtist, ')
           ..write('durationMs: $durationMs, ')
           ..write('trackNumber: $trackNumber, ')
           ..write('sizeBytes: $sizeBytes, ')
@@ -474,6 +515,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     title,
     artist,
     album,
+    albumArtist,
     durationMs,
     trackNumber,
     sizeBytes,
@@ -490,6 +532,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
           other.title == this.title &&
           other.artist == this.artist &&
           other.album == this.album &&
+          other.albumArtist == this.albumArtist &&
           other.durationMs == this.durationMs &&
           other.trackNumber == this.trackNumber &&
           other.sizeBytes == this.sizeBytes &&
@@ -504,6 +547,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
   final Value<String> title;
   final Value<String> artist;
   final Value<String> album;
+  final Value<String?> albumArtist;
   final Value<int> durationMs;
   final Value<int?> trackNumber;
   final Value<int> sizeBytes;
@@ -516,6 +560,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
     this.title = const Value.absent(),
     this.artist = const Value.absent(),
     this.album = const Value.absent(),
+    this.albumArtist = const Value.absent(),
     this.durationMs = const Value.absent(),
     this.trackNumber = const Value.absent(),
     this.sizeBytes = const Value.absent(),
@@ -529,6 +574,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
     required String title,
     required String artist,
     required String album,
+    this.albumArtist = const Value.absent(),
     required int durationMs,
     this.trackNumber = const Value.absent(),
     required int sizeBytes,
@@ -549,6 +595,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
     Expression<String>? title,
     Expression<String>? artist,
     Expression<String>? album,
+    Expression<String>? albumArtist,
     Expression<int>? durationMs,
     Expression<int>? trackNumber,
     Expression<int>? sizeBytes,
@@ -562,6 +609,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
       if (title != null) 'title': title,
       if (artist != null) 'artist': artist,
       if (album != null) 'album': album,
+      if (albumArtist != null) 'album_artist': albumArtist,
       if (durationMs != null) 'duration_ms': durationMs,
       if (trackNumber != null) 'track_number': trackNumber,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
@@ -577,6 +625,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
     Value<String>? title,
     Value<String>? artist,
     Value<String>? album,
+    Value<String?>? albumArtist,
     Value<int>? durationMs,
     Value<int?>? trackNumber,
     Value<int>? sizeBytes,
@@ -590,6 +639,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
       title: title ?? this.title,
       artist: artist ?? this.artist,
       album: album ?? this.album,
+      albumArtist: albumArtist ?? this.albumArtist,
       durationMs: durationMs ?? this.durationMs,
       trackNumber: trackNumber ?? this.trackNumber,
       sizeBytes: sizeBytes ?? this.sizeBytes,
@@ -616,6 +666,9 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
     }
     if (album.present) {
       map['album'] = Variable<String>(album.value);
+    }
+    if (albumArtist.present) {
+      map['album_artist'] = Variable<String>(albumArtist.value);
     }
     if (durationMs.present) {
       map['duration_ms'] = Variable<int>(durationMs.value);
@@ -646,6 +699,7 @@ class TracksCompanion extends UpdateCompanion<TrackRow> {
           ..write('title: $title, ')
           ..write('artist: $artist, ')
           ..write('album: $album, ')
+          ..write('albumArtist: $albumArtist, ')
           ..write('durationMs: $durationMs, ')
           ..write('trackNumber: $trackNumber, ')
           ..write('sizeBytes: $sizeBytes, ')
@@ -1698,6 +1752,7 @@ typedef $$TracksTableCreateCompanionBuilder = TracksCompanion Function({
   required String title,
   required String artist,
   required String album,
+  Value<String?> albumArtist,
   required int durationMs,
   Value<int?> trackNumber,
   required int sizeBytes,
@@ -1711,6 +1766,7 @@ typedef $$TracksTableUpdateCompanionBuilder = TracksCompanion Function({
   Value<String> title,
   Value<String> artist,
   Value<String> album,
+  Value<String?> albumArtist,
   Value<int> durationMs,
   Value<int?> trackNumber,
   Value<int> sizeBytes,
@@ -1811,6 +1867,11 @@ class $$TracksTableFilterComposer
 
   ColumnFilters<String> get album => $composableBuilder(
     column: $table.album,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1954,6 +2015,11 @@ class $$TracksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get durationMs => $composableBuilder(
     column: $table.durationMs,
     builder: (column) => ColumnOrderings(column),
@@ -2008,6 +2074,11 @@ class $$TracksTableAnnotationComposer
 
   GeneratedColumn<String> get album =>
       $composableBuilder(column: $table.album, builder: (column) => column);
+
+  GeneratedColumn<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get durationMs => $composableBuilder(
     column: $table.durationMs,
@@ -2148,6 +2219,7 @@ class $$TracksTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> artist = const Value.absent(),
                 Value<String> album = const Value.absent(),
+                Value<String?> albumArtist = const Value.absent(),
                 Value<int> durationMs = const Value.absent(),
                 Value<int?> trackNumber = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
@@ -2160,6 +2232,7 @@ class $$TracksTableTableManager
                 title: title,
                 artist: artist,
                 album: album,
+                albumArtist: albumArtist,
                 durationMs: durationMs,
                 trackNumber: trackNumber,
                 sizeBytes: sizeBytes,
@@ -2174,6 +2247,7 @@ class $$TracksTableTableManager
                 required String title,
                 required String artist,
                 required String album,
+                Value<String?> albumArtist = const Value.absent(),
                 required int durationMs,
                 Value<int?> trackNumber = const Value.absent(),
                 required int sizeBytes,
@@ -2186,6 +2260,7 @@ class $$TracksTableTableManager
                 title: title,
                 artist: artist,
                 album: album,
+                albumArtist: albumArtist,
                 durationMs: durationMs,
                 trackNumber: trackNumber,
                 sizeBytes: sizeBytes,
