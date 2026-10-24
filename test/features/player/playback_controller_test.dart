@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:musir/data/models/track.dart';
 import 'package:musir/features/player/playback_controller.dart';
 import 'package:musir/services/audio/audio_engine.dart';
 import 'package:musir/services/audio/playback_store.dart';
