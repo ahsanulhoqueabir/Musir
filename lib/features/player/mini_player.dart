@@ -28,14 +28,19 @@ class MiniPlayer extends ConsumerWidget {
       color: theme.colorScheme.surfaceContainerHigh,
       child: InkWell(
         onTap: () => context.push('/player'),
-        child: SizedBox(
-          height: Sizes.miniPlayerHeight,
+        child: ConstrainedBox(
+          // Grows with the system text size instead of clipping.
+          constraints: const BoxConstraints(minHeight: Sizes.miniPlayerHeight),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const _MiniProgress(),
-              Expanded(
+              Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Space.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.md,
+                    vertical: Space.xs,
+                  ),
                   child: Row(
                     children: [
                       Hero(
@@ -54,6 +59,7 @@ class MiniPlayer extends ConsumerWidget {
                               'Now playing: ${track.title} by ${track.artist}. Open player',
                           excludeSemantics: true,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

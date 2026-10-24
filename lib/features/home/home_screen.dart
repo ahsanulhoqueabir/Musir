@@ -76,23 +76,32 @@ class _SearchEntry extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(28),
             onTap: () => context.push('/search'),
-            child: SizedBox(
-              height: Sizes.touch + 4,
-              child: Row(
-                children: [
-                  const SizedBox(width: Space.lg),
-                  Icon(
-                    Icons.search_rounded,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: Space.md),
-                  Text(
-                    'Search songs, artists, albums',
-                    style: theme.textTheme.bodyLarge?.copyWith(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: Sizes.touch + 4),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Space.lg,
+                  vertical: Space.sm,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search_rounded,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: Space.md),
+                    Expanded(
+                      child: Text(
+                        'Search songs, artists, albums',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

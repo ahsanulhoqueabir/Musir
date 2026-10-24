@@ -277,102 +277,110 @@ class _Controls extends ConsumerWidget {
     final playback = ref.read(playbackControllerProvider);
     final theme = Theme.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          tooltip: shuffle ? 'Shuffle on' : 'Shuffle off',
-          isSelected: shuffle,
-          style: shuffle
-              ? IconButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                )
-              : null,
-          icon: const Icon(Icons.shuffle_rounded),
-          onPressed: () {
-            HapticFeedback.selectionClick();
-            playback.toggleShuffle();
-          },
-        ),
-        IconButton(
-          tooltip: 'Previous',
-          iconSize: 38,
-          icon: const Icon(Icons.skip_previous_rounded),
-          onPressed: () {
-            HapticFeedback.selectionClick();
-            playback.previous();
-          },
-        ),
-        SizedBox.square(
-          dimension: 72,
-          child: FilledButton(
-            style: FilledButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-            ),
-            onPressed: loading
-                ? null
-                : () {
-                    HapticFeedback.lightImpact();
-                    playback.togglePlayPause();
-                  },
-            child: Semantics(
-              label: playing ? 'Pause' : 'Play',
-              child: loading
-                  ? SizedBox.square(
-                      dimension: 28,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: theme.colorScheme.onPrimary,
-                      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 320dp-wide phones can't fit the full-size row.
+        final compact = constraints.maxWidth < 300;
+        final skipSize = compact ? 32.0 : 38.0;
+        final playSize = compact ? 64.0 : 72.0;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              tooltip: shuffle ? 'Shuffle on' : 'Shuffle off',
+              isSelected: shuffle,
+              style: shuffle
+                  ? IconButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primaryContainer,
                     )
-                  : AnimatedSwitcher(
-                      duration: Motion.fast,
-                      child: Icon(
-                        playing
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        key: ValueKey(playing),
-                        size: 40,
-                      ),
-                    ),
+                  : null,
+              icon: const Icon(Icons.shuffle_rounded),
+              onPressed: () {
+                HapticFeedback.selectionClick();
+                playback.toggleShuffle();
+              },
             ),
-          ),
-        ),
-        IconButton(
-          tooltip: 'Next',
-          iconSize: 38,
-          icon: const Icon(Icons.skip_next_rounded),
-          onPressed: (hasNext || repeatAll)
-              ? () {
-                  HapticFeedback.selectionClick();
-                  playback.next();
-                }
-              : null,
-        ),
-        IconButton(
-          tooltip: switch (repeat) {
-            RepeatSetting.off => 'Repeat off',
-            RepeatSetting.all => 'Repeat all',
-            RepeatSetting.one => 'Repeat one',
-          },
-          isSelected: repeat != RepeatSetting.off,
-          style: repeat != RepeatSetting.off
-              ? IconButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                )
-              : null,
-          icon: Icon(
-            repeat == RepeatSetting.one
-                ? Icons.repeat_one_rounded
-                : Icons.repeat_rounded,
-          ),
-          onPressed: () {
-            HapticFeedback.selectionClick();
-            playback.cycleRepeat();
-          },
-        ),
-      ],
+            IconButton(
+              tooltip: 'Previous',
+              iconSize: skipSize,
+              icon: const Icon(Icons.skip_previous_rounded),
+              onPressed: () {
+                HapticFeedback.selectionClick();
+                playback.previous();
+              },
+            ),
+            SizedBox.square(
+              dimension: playSize,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: loading
+                    ? null
+                    : () {
+                        HapticFeedback.lightImpact();
+                        playback.togglePlayPause();
+                      },
+                child: Semantics(
+                  label: playing ? 'Pause' : 'Play',
+                  child: loading
+                      ? SizedBox.square(
+                          dimension: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                        )
+                      : AnimatedSwitcher(
+                          duration: Motion.fast,
+                          child: Icon(
+                            playing
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                            key: ValueKey(playing),
+                            size: 40,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Next',
+              iconSize: skipSize,
+              icon: const Icon(Icons.skip_next_rounded),
+              onPressed: (hasNext || repeatAll)
+                  ? () {
+                      HapticFeedback.selectionClick();
+                      playback.next();
+                    }
+                  : null,
+            ),
+            IconButton(
+              tooltip: switch (repeat) {
+                RepeatSetting.off => 'Repeat off',
+                RepeatSetting.all => 'Repeat all',
+                RepeatSetting.one => 'Repeat one',
+              },
+              isSelected: repeat != RepeatSetting.off,
+              style: repeat != RepeatSetting.off
+                  ? IconButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                    )
+                  : null,
+              icon: Icon(
+                repeat == RepeatSetting.one
+                    ? Icons.repeat_one_rounded
+                    : Icons.repeat_rounded,
+              ),
+              onPressed: () {
+                HapticFeedback.selectionClick();
+                playback.cycleRepeat();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
