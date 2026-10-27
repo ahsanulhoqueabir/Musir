@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../app/theme/tokens.dart';
+import '../../core/widgets/brand_mark.dart';
 import '../../core/widgets/library_gate.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/track_artwork.dart';
@@ -31,6 +32,8 @@ class HomeScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
+                  const BrandMark(size: 36),
+                  const SizedBox(width: Space.sm),
                   Text.rich(
                     TextSpan(
                       children: [

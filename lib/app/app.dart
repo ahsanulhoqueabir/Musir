@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../features/library/library_controller.dart';
 import '../features/player/player_providers.dart';
 import '../features/settings/settings_state.dart';
+import '../core/widgets/splash_gate.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -80,6 +81,8 @@ class _MusirAppState extends ConsumerState<MusirApp>
       themeMode: themeMode,
       scaffoldMessengerKey: messengerKey,
       routerConfig: _router,
+      builder: (context, child) =>
+          SplashGate(child: child ?? const SizedBox.shrink()),
     );
   }
 }

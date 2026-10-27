@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'tokens.dart';
 
-/// Musir brand accent.
-const Color musirAccent = Color(0xFFFF6B4A);
+/// Musir brand colors, taken from the logo.
+const Color musirGreen = Color(0xFF0F6630);
+const Color musirRed = Color(0xFFA50F0F);
 
 abstract final class AppTheme {
   static ThemeData get light => _build(_lightScheme);
@@ -11,10 +12,10 @@ abstract final class AppTheme {
 
   static const ColorScheme _lightScheme = ColorScheme(
     brightness: Brightness.light,
-    primary: Color(0xFFD94A2B), // darkened accent keeps contrast on white
+    primary: musirGreen,
     onPrimary: Color(0xFFFFFFFF),
-    primaryContainer: Color(0xFFFFE3DB),
-    onPrimaryContainer: Color(0xFF4A1408),
+    primaryContainer: Color(0xFFD3EBDA),
+    onPrimaryContainer: Color(0xFF05260F),
     secondary: Color(0xFF5B5550),
     onSecondary: Color(0xFFFFFFFF),
     secondaryContainer: Color(0xFFE9E4E1),
@@ -37,10 +38,10 @@ abstract final class AppTheme {
 
   static const ColorScheme _darkScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: musirAccent,
-    onPrimary: Color(0xFF2B0B02),
-    primaryContainer: Color(0xFF5C2415),
-    onPrimaryContainer: Color(0xFFFFDBD1),
+    primary: Color(0xFF6FCB8D),
+    onPrimary: Color(0xFF03210E),
+    primaryContainer: Color(0xFF0C4F26),
+    onPrimaryContainer: Color(0xFFD3EBDA),
     secondary: Color(0xFFC9C1BB),
     onSecondary: Color(0xFF2A2623),
     secondaryContainer: Color(0xFF3A3633),

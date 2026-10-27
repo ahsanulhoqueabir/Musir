@@ -156,6 +156,9 @@ Future<void> pumpApp(
     tester.element(find.byType(MusirApp)),
   );
   await settle(tester);
+  // Let the branded splash finish and fade out so it doesn't cover the UI.
+  await tester.pump(const Duration(seconds: 2));
+  await tester.pump(const Duration(milliseconds: 500));
 }
 
 /// Lets async DB/stream work and animations complete.
