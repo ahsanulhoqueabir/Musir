@@ -118,3 +118,12 @@ Everything stays on your device. Musir has no accounts, ads or analytics.
 - **No notification controls?** Check Musir's notification settings in your phone's settings.
 - **A song won't play?** Playback depends on your phone's supported formats. Musir looks for
   MP3, M4A, AAC, FLAC, WAV, OGG, Opus, WMA and more.
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). To report a security issue, see [SECURITY.md](SECURITY.md).
+
+## License
+
+Musir is open source under the [MIT License](LICENSE).
