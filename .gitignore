@@ -55,3 +55,7 @@ local.properties
 .env
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# Release builds
+/dist/
+*.release-bak

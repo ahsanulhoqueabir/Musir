@@ -18,7 +18,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.musir.musir"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android requires compiling against API 37+.
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
